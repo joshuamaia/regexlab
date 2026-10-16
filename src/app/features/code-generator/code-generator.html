@@ -1,0 +1,38 @@
+<div class="generator">
+  <div class="toolbar">
+    <div class="segmented" role="tablist" aria-label="Linguagem do código">
+      @for (lang of languages; track lang.id) {
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="language() === lang.id"
+          [class.active]="language() === lang.id"
+          (click)="language.set(lang.id)"
+        >
+          {{ lang.label }}
+        </button>
+      }
+    </div>
+    <app-copy-button [value]="generated().code" label="Copiar código" ariaLabel="Copiar código" />
+  </div>
+
+  @if (invalid()) {
+    <div class="notice notice-danger">
+      <svg lucideTriangleAlert [size]="15"></svg>
+      <span>A expressão atual é inválida; o código gerado não funcionará até que ela seja corrigida.</span>
+    </div>
+  }
+
+  @for (notice of generated().notices; track notice.message) {
+    <div class="notice" [class]="notice.severity === 'warning' ? 'notice-warning' : 'notice-info'" data-testid="code-notice">
+      @if (notice.severity === 'warning') {
+        <svg lucideTriangleAlert [size]="15"></svg>
+      } @else {
+        <svg lucideInfo [size]="15"></svg>
+      }
+      <span>{{ notice.message }}</span>
+    </div>
+  }
+
+  <pre class="code" data-testid="generated-code"><code>@for (token of tokens(); track $index) {<span [class]="'tk-' + token.type">{{ token.text }}</span>}</code></pre>
+</div>

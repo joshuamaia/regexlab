@@ -1,0 +1,74 @@
+<div class="backdrop" (click)="closed.emit()" aria-hidden="true"></div>
+
+<aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="favorites-title" tabindex="-1">
+  <header class="drawer-header">
+    <h2 id="favorites-title" class="card-title">
+      <svg lucideStar [size]="16"></svg>
+      Favoritos
+      <span class="badge">{{ favorites.count() }}</span>
+    </h2>
+    <button type="button" class="btn-icon" aria-label="Fechar favoritos" (click)="closed.emit()">
+      <svg lucideX [size]="16"></svg>
+    </button>
+  </header>
+
+  <div class="drawer-body">
+    @if (editing() === 'new') {
+      <app-favorite-form [initial]="currentDraft()" submitLabel="Salvar favorito" (save)="create($event)" (cancelled)="editing.set(null)" />
+    } @else {
+      <button type="button" class="btn btn-primary new" (click)="editing.set('new')">
+        <svg lucidePlus [size]="15"></svg>
+        Salvar expressão atual
+      </button>
+    }
+
+    @for (favorite of favorites.favorites(); track favorite.id) {
+      @if (editing() === favorite.id) {
+        <app-favorite-form
+          [initial]="draftOf(favorite)"
+          submitLabel="Atualizar"
+          (save)="update(favorite.id, $event)"
+          (cancelled)="editing.set(null)"
+        />
+      } @else {
+        <article class="favorite" data-testid="favorite-item">
+          <div class="favorite-header">
+            <h3>{{ favorite.name }}</h3>
+            <time [attr.datetime]="favorite.createdAt">{{ favorite.createdAt | date: 'dd/MM/yyyy HH:mm' }}</time>
+          </div>
+          <code class="pattern">/{{ favorite.pattern }}/{{ favorite.flags }}</code>
+          @if (favorite.sampleText) {
+            <p class="sample">{{ favorite.sampleText }}</p>
+          }
+
+          <div class="actions">
+            @if (confirmingDelete() === favorite.id) {
+              <span class="confirm">Excluir este favorito?</span>
+              <button type="button" class="btn btn-ghost" (click)="confirmingDelete.set(null)">Cancelar</button>
+              <button type="button" class="btn btn-danger" (click)="remove(favorite.id)">Excluir</button>
+            } @else {
+              <button type="button" class="btn" (click)="load(favorite)">
+                <svg lucideUpload [size]="14"></svg>
+                Carregar
+              </button>
+              <button type="button" class="btn-icon" aria-label="Editar favorito" title="Editar" (click)="editing.set(favorite.id)">
+                <svg lucidePencil [size]="14"></svg>
+              </button>
+              <button type="button" class="btn-icon" aria-label="Excluir favorito" title="Excluir" (click)="confirmingDelete.set(favorite.id)">
+                <svg lucideTrash [size]="14"></svg>
+              </button>
+            }
+          </div>
+        </article>
+      }
+    } @empty {
+      @if (editing() !== 'new') {
+        <div class="empty-state">
+          <svg lucideStar [size]="28"></svg>
+          <strong>Nenhum favorito salvo</strong>
+          <span>Salve expressões que você usa com frequência para carregá-las com um clique.</span>
+        </div>
+      }
+    }
+  </div>
+</aside>

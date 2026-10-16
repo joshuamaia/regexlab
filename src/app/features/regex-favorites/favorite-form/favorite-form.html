@@ -1,0 +1,35 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="field">
+    <label for="favorite-name">Nome</label>
+    <input id="favorite-name" class="input" formControlName="name" placeholder="Ex.: Datas brasileiras" maxlength="60" />
+    @if (form.controls.name.touched && form.controls.name.invalid) {
+      <span class="error">Informe um nome para o favorito.</span>
+    }
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for="favorite-pattern">Expressão regular</label>
+      <input id="favorite-pattern" class="input mono" formControlName="pattern" spellcheck="false" />
+    </div>
+    <div class="field">
+      <label for="favorite-flags">Flags</label>
+      <input id="favorite-flags" class="input mono" formControlName="flags" spellcheck="false" />
+    </div>
+  </div>
+  @if (form.errors?.['regex']; as regexError) {
+    @if (form.controls.pattern.dirty || form.controls.flags.dirty || form.touched) {
+      <span class="error">{{ regexError }}</span>
+    }
+  }
+
+  <div class="field">
+    <label for="favorite-text">Texto de exemplo (opcional)</label>
+    <textarea id="favorite-text" class="input" rows="3" formControlName="sampleText" spellcheck="false"></textarea>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn-ghost" (click)="cancelled.emit()">Cancelar</button>
+    <button type="submit" class="btn btn-primary">{{ submitLabel() }}</button>
+  </div>
+</form>

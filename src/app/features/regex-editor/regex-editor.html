@@ -1,0 +1,78 @@
+<section class="card editor" aria-labelledby="pattern-label">
+  <div class="card-header">
+    <h2 class="card-title" id="pattern-label">
+      <svg lucideRegex [size]="16"></svg>
+      Expressão regular
+    </h2>
+
+    <div class="status" aria-live="polite">
+      @switch (status()) {
+        @case ('processing') {
+          <span class="badge">
+            <svg lucideLoaderCircle [size]="12" class="spin"></svg>
+            Processando…
+          </span>
+        }
+        @case ('done') {
+          @let result = store.result()!;
+          <span class="badge" [class.badge-success]="store.matchCount() > 0" data-testid="match-count">
+            {{ store.matchCount() }}{{ result.limitReached ? '+' : '' }}
+            {{ store.matchCount() === 1 ? 'correspondência' : 'correspondências' }}
+          </span>
+          <span class="badge" title="Tempo de processamento no Web Worker">
+            <svg lucideTimer [size]="12"></svg>
+            {{ result.durationMs | number: '1.0-2' }} ms
+          </span>
+        }
+        @case ('error') {
+          <span class="badge badge-warning">Sem resultados</span>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="pattern-row">
+      <div class="pattern-field" [class.invalid]="!store.validation().valid">
+        <span class="delimiter" aria-hidden="true">/</span>
+        <input
+          id="pattern-input"
+          class="pattern-input mono"
+          type="text"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="Digite sua expressão regular…"
+          aria-label="Expressão regular"
+          [attr.aria-invalid]="!store.validation().valid"
+          [value]="store.pattern()"
+          (input)="onPatternInput($event)"
+        />
+        <span class="delimiter" aria-hidden="true">/</span>
+        <span class="flags-text mono" aria-hidden="true">{{ store.flags() }}</span>
+      </div>
+
+      <div class="actions">
+        <app-copy-button [value]="fullExpression()" ariaLabel="Copiar expressão" [disabled]="!store.pattern()" />
+        <button type="button" class="btn-icon" title="Salvar nos favoritos" aria-label="Salvar nos favoritos" [disabled]="!store.pattern()" (click)="saveFavorite.emit()">
+          <svg lucideStarPlus [size]="15"></svg>
+        </button>
+        <button type="button" class="btn-icon" title="Limpar expressão" aria-label="Limpar expressão" [disabled]="!store.pattern()" (click)="store.clearPattern()">
+          <svg lucideEraser [size]="15"></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="flags-row">
+      <span class="flags-label">Flags</span>
+      <app-flag-selector [flags]="store.flags()" (flagToggle)="store.toggleFlag($event)" />
+    </div>
+
+    @if (store.errorMessage(); as error) {
+      <div class="notice notice-danger" role="alert" data-testid="regex-error">
+        <svg lucideCircleAlert [size]="15"></svg>
+        <span>{{ error }}</span>
+      </div>
+    }
+  </div>
+</section>

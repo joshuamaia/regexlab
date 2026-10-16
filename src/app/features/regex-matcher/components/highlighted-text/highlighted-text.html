@@ -1,0 +1,49 @@
+<section class="card" aria-labelledby="highlight-title">
+  <div class="card-header">
+    <h2 class="card-title" id="highlight-title">
+      <svg lucideHighlighter [size]="16"></svg>
+      Correspondências destacadas
+    </h2>
+    @if (store.selectedMatch(); as match) {
+      <span class="badge badge-accent selection" data-testid="selected-range">
+        #{{ match.index + 1 }} · início {{ match.start }} · fim {{ match.end }}
+      </span>
+    } @else if (store.matchCount() > 0) {
+      <span class="hint">Clique em um destaque para selecioná-lo</span>
+    }
+  </div>
+
+  <div class="viewer mono" data-testid="highlighted-text">
+    @for (segment of segments(); track $index) {
+      @switch (segment.kind) {
+        @case ('text') {<span>{{ segment.text }}</span>}
+        @case ('match') {<mark
+            class="match"
+            role="button"
+            tabindex="0"
+            [class]="'tone-' + (segment.matchIndex % 5)"
+            [class.selected]="store.selectedIndex() === segment.matchIndex"
+            [attr.data-match]="segment.matchIndex"
+            [attr.aria-label]="'Correspondência ' + (segment.matchIndex + 1)"
+            [attr.aria-pressed]="store.selectedIndex() === segment.matchIndex"
+            (click)="store.selectMatch(segment.matchIndex)"
+            (keydown.enter)="store.selectMatch(segment.matchIndex)"
+            (keydown.space)="$event.preventDefault(); store.selectMatch(segment.matchIndex)"
+          >{{ segment.text }}</mark>}
+        @case ('empty') {<mark
+            class="empty"
+            role="button"
+            tabindex="0"
+            [class.selected]="store.selectedIndex() === segment.matchIndex"
+            [attr.data-match]="segment.matchIndex"
+            [attr.aria-label]="'Correspondência vazia ' + (segment.matchIndex + 1)"
+            title="Correspondência de comprimento zero"
+            (click)="store.selectMatch(segment.matchIndex)"
+            (keydown.enter)="store.selectMatch(segment.matchIndex)"
+          ></mark>}
+      }
+    } @empty {
+      <span class="placeholder">O texto de teste aparecerá aqui com as correspondências destacadas.</span>
+    }
+  </div>
+</section>

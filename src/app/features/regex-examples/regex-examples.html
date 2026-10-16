@@ -1,0 +1,44 @@
+<div class="examples">
+  <div class="notice notice-info">
+    <svg lucideInfo [size]="15"></svg>
+    <span>
+      As expressões validam apenas o <strong>formato</strong>. Verificações como dígitos de CPF e CNPJ ou a existência
+      de uma data exigem validações adicionais fora da Regex.
+    </span>
+  </div>
+
+  <div class="grid">
+    @for (example of examples; track example.id) {
+      <article class="example" data-testid="example-card">
+        <header>
+          <h3>{{ example.name }}</h3>
+          <span class="badge mono">/{{ example.flags }}</span>
+        </header>
+        <p class="description">{{ example.description }}</p>
+        <code class="pattern">{{ example.pattern }}</code>
+
+        <div class="samples">
+          <ul aria-label="Exemplos válidos">
+            @for (sample of example.validExamples; track sample) {
+              <li class="valid"><svg lucideCircleCheck [size]="13"></svg><code>{{ sample }}</code></li>
+            }
+          </ul>
+          <ul aria-label="Exemplos inválidos">
+            @for (sample of example.invalidExamples; track sample) {
+              <li class="invalid"><svg lucideCircleX [size]="13"></svg><code>{{ sample }}</code></li>
+            }
+          </ul>
+        </div>
+
+        @if (example.note) {
+          <p class="note"><svg lucideTriangleAlert [size]="13"></svg>{{ example.note }}</p>
+        }
+
+        <button type="button" class="btn use" (click)="use(example)">
+          <svg lucideUpload [size]="14"></svg>
+          Usar exemplo
+        </button>
+      </article>
+    }
+  </div>
+</div>

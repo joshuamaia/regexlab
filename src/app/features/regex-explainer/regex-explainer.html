@@ -1,0 +1,33 @@
+<div class="explainer">
+  <p class="intro">
+    <svg lucideLightbulb [size]="15"></svg>
+    Cada linha descreve um elemento da expressão. Itens recuados pertencem ao grupo acima deles.
+  </p>
+
+  @if (invalid()) {
+    <div class="notice notice-warning">A expressão possui erros de sintaxe; a explicação abaixo pode estar incompleta.</div>
+  }
+
+  @if (rows().length > 0) {
+    <ul class="rows" data-testid="explanation">
+      @for (row of rows(); track $index) {
+        <li class="row" [class]="'kind-' + row.node.kind" [style.--depth]="row.depth">
+          <code class="token" [title]="row.node.token">{{ row.node.token }}</code>
+          <span class="kind">{{ kindLabels[row.node.kind] }}</span>
+          <span class="description" [class.unknown]="row.node.kind === 'unknown'">{{ row.node.description }}</span>
+        </li>
+      }
+    </ul>
+  } @else {
+    <div class="empty-state">Digite uma expressão regular para ver a explicação.</div>
+  }
+
+  @if (activeFlags().length > 0) {
+    <div class="flags">
+      <span class="flags-title">Flags ativas</span>
+      @for (flag of activeFlags(); track flag.flag) {
+        <span class="flag"><code>{{ flag.flag }}</code> {{ flag.description }}</span>
+      }
+    </div>
+  }
+</div>

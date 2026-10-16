@@ -1,0 +1,37 @@
+<header class="header">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">
+      <svg lucideRegex [size]="20"></svg>
+    </span>
+    <span class="brand-name">Regex<strong>Lab</strong></span>
+    <span class="brand-tagline">Laboratório visual de expressões regulares</span>
+  </div>
+
+  <nav class="nav" aria-label="Navegação principal">
+    <button type="button" class="btn btn-ghost" (click)="examplesClick.emit()">
+      <svg lucideLibrary [size]="16"></svg>
+      <span class="nav-label">Exemplos</span>
+    </button>
+    <button type="button" class="btn btn-ghost" (click)="favoritesClick.emit()">
+      <svg lucideStar [size]="16"></svg>
+      <span class="nav-label">Favoritos</span>
+      @if (favoritesCount() > 0) {
+        <span class="badge badge-accent">{{ favoritesCount() }}</span>
+      }
+    </button>
+    <span class="divider" aria-hidden="true"></span>
+    <button
+      type="button"
+      class="btn-icon theme-toggle"
+      [attr.aria-label]="theme.theme() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+      [title]="theme.theme() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+      (click)="theme.toggle()"
+    >
+      @if (theme.theme() === 'dark') {
+        <svg lucideSun [size]="17"></svg>
+      } @else {
+        <svg lucideMoon [size]="17"></svg>
+      }
+    </button>
+  </nav>
+</header>

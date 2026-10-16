@@ -1,0 +1,89 @@
+:host {
+  display: block;
+}
+
+.selection {
+  font-family: var(--font-mono);
+}
+
+.hint {
+  color: var(--text-subtle);
+  font-size: 0.75rem;
+
+  @media (max-width: 520px) {
+    display: none;
+  }
+}
+
+.viewer {
+  min-height: 140px;
+  max-height: 360px;
+  overflow: auto;
+  padding: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.placeholder {
+  color: var(--text-subtle);
+  font-family: var(--font-sans);
+}
+
+mark {
+  color: inherit;
+  cursor: pointer;
+  transition:
+    box-shadow var(--transition),
+    background-color var(--transition);
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+}
+
+.match {
+  padding: 0.1em 0.15em;
+  border-radius: 4px;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--tone-border);
+  background: var(--tone-bg);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+
+  &:hover {
+    box-shadow: inset 0 0 0 1.5px var(--tone-border);
+  }
+
+  &.selected {
+    background: var(--tone-border);
+    color: #fff;
+    box-shadow:
+      0 0 0 2px var(--surface),
+      0 0 0 4px var(--tone-border);
+  }
+}
+
+@for $i from 0 through 4 {
+  .tone-#{$i} {
+    --tone-bg: var(--match-#{$i}-bg);
+    --tone-border: var(--match-#{$i}-border);
+  }
+}
+
+.empty {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  margin: 0 1px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  background: var(--warning);
+
+  &.selected {
+    width: 4px;
+    box-shadow: 0 0 0 2px var(--warning-soft);
+  }
+}

@@ -1,0 +1,107 @@
+<section class="card panel" aria-labelledby="matches-title">
+  <div class="card-header">
+    <h2 class="card-title" id="matches-title">
+      <svg lucideListOrdered [size]="16"></svg>
+      Resultados
+      <span class="badge" [class.badge-accent]="store.matchCount() > 0" data-testid="results-total">
+        {{ store.matchCount() }}{{ store.result()?.limitReached ? '+' : '' }}
+      </span>
+    </h2>
+  </div>
+
+  <div class="panel-body">
+    @if (store.result()?.limitReached) {
+      <div class="notice notice-warning" role="status" data-testid="limit-warning">
+        <svg lucideTriangleAlert [size]="15"></svg>
+        <span>
+          Limite de {{ store.limits.maxMatches }} correspondências atingido. Os demais resultados não foram processados.
+        </span>
+      </div>
+    }
+
+    @switch (state()) {
+      @case ('matches') {
+        <ol class="matches">
+          @for (match of store.matches(); track match.index) {
+            <li>
+              <article
+                class="match-card"
+                [attr.data-match-card]="match.index"
+                [class.selected]="store.selectedIndex() === match.index"
+                [attr.aria-current]="store.selectedIndex() === match.index"
+                (click)="store.selectMatch(match.index)"
+              >
+                <header class="match-header">
+                  <button type="button" class="match-title" (click)="$event.stopPropagation(); store.selectMatch(match.index)">
+                    <span class="swatch" [class]="'tone-' + (match.index % 5)"></span>
+                    Correspondência {{ match.index + 1 }}
+                  </button>
+                  <app-copy-button [value]="match.value" ariaLabel="Copiar correspondência" (click)="$event.stopPropagation()" />
+                </header>
+
+                <code class="value">"{{ display(match.value) }}"</code>
+
+                <dl class="positions">
+                  <div><dt>Início</dt><dd>{{ match.start }}</dd></div>
+                  <div><dt>Fim</dt><dd>{{ match.end }}</dd></div>
+                  <div><dt>Comprimento</dt><dd>{{ match.end - match.start }}</dd></div>
+                </dl>
+
+                @if (match.groups.length > 0) {
+                  <div class="groups">
+                    <span class="groups-label">Grupos capturados</span>
+                    @for (group of match.groups; track group.index) {
+                      <div class="group" [style.--group-color]="'var(--group-' + ((group.index - 1) % 6) + ')'">
+                        <span class="group-name">
+                          {{ group.name ?? 'Grupo ' + group.index }}
+                          @if (group.name) {
+                            <small>#{{ group.index }}</small>
+                          }
+                        </span>
+                        @if (group.value !== undefined) {
+                          <code class="group-value">"{{ group.value }}"</code>
+                          @if (group.start !== undefined) {
+                            <span class="group-range">[{{ group.start }}–{{ group.end }}]</span>
+                          }
+                          <app-copy-button [value]="group.value" ariaLabel="Copiar grupo" (click)="$event.stopPropagation()" />
+                        } @else {
+                          <span class="group-missing">não participou</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </article>
+            </li>
+          }
+        </ol>
+      }
+      @case ('empty') {
+        <div class="empty-state" data-testid="no-matches">
+          <svg lucideSearchX [size]="28"></svg>
+          <strong>Nenhuma correspondência encontrada</strong>
+          <span>Ajuste a expressão, as flags ou o texto de teste.</span>
+        </div>
+      }
+      @case ('timeout') {
+        <div class="empty-state">
+          <svg lucideTimer [size]="28"></svg>
+          <strong>Processamento interrompido</strong>
+          <span>A expressão demorou demais e o Web Worker foi encerrado. A interface continua disponível.</span>
+        </div>
+      }
+      @case ('pending') {
+        <div class="empty-state">
+          <span>Processando…</span>
+        </div>
+      }
+      @default {
+        <div class="empty-state">
+          <svg lucideCircleAlert [size]="28"></svg>
+          <strong>Sem resultados</strong>
+          <span>Corrija o problema indicado no editor para ver as correspondências.</span>
+        </div>
+      }
+    }
+  </div>
+</section>
